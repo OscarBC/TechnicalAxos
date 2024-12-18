@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TechnicalAxos_OscarBarrera.Views.MainPage"
+             xmlns:viewModels="clr-namespace:TechnicalAxos_OscarBarrera.ViewModels"
+             xmlns:helpers="clr-namespace:TechnicalAxos_OscarBarrera.Helpers.Views">
+
+    <ContentPage.BindingContext>
+        <viewModels:MainPageViewModel/>
+    </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <helpers:FirstCapitalConverter x:Key="FirstCapitalConverter"/>
+            <helpers:IsNotNullOrEmptyConverter x:Key="IsNotNullOrEmptyConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <!-- Define Grid Rows -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- For the content -->
+            <RowDefinition Height="*"/>
+            <!-- For the Countries CollectionView -->
+        </Grid.RowDefinitions>
+
+
+        <!-- Content -->
+        <VerticalStackLayout
+            Grid.Row="0"
+            Padding="30,10,30,0"
+            Spacing="25">
+
+            <Label
+                Text="{Binding BundleID}"
+                SemanticProperties.Description="Bundle ID"/>
+
+            <Image
+                Source="{Binding ImageSource}"
+                HeightRequest="185"
+                Aspect="AspectFit"
+                SemanticProperties.Description="Display Image Controll"/>
+
+            <Button
+                Text="Pick Image"
+                SemanticProperties.Hint="Open Image Picker"
+                Command="{Binding PickImageCommand}"
+                HorizontalOptions="Fill"/>
+
+        </VerticalStackLayout>
+
+        <!-- Countries Collection -->
+        <CollectionView
+            Grid.Row="1"
+            Margin="30,10"
+            ItemsSource="{Binding Countries}"
+            SelectionMode="None"
+            ItemSizingStrategy="MeasureFirstItem"
+            SemanticProperties.Description="Countries List">
+            <!-- ItemSizingStrategy="MeasureFirstItem" for view recycling-->
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="0,10"
+                          ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="1"/>
+                        </Grid.RowDefinitions>
+
+                        <StackLayout Grid.Column="0"
+                                     Grid.Row="0"
+                                     Orientation="Horizontal"
+                                     VerticalOptions="Center">
+
+                            <Image
+                                Source="{Binding Flags.Png}"
+                                HeightRequest="50"
+                                WidthRequest="50"
+                                Aspect="AspectFit"
+                                VerticalOptions="Center"/>
+                        </StackLayout>
+
+                        <VerticalStackLayout Grid.Column="1"
+                                             Grid.Row="0">
+                            <Label
+                                Text="{Binding Name.Common}"
+                                FontSize="Medium"
+                                MaxLines="1"
+                                LineBreakMode="TailTruncation"
+                                SemanticProperties.Description="Country Name"/>
+                            <Label
+                                Text="{Binding Capital, Converter={StaticResource FirstCapitalConverter}, StringFormat='Capital: {0}'}"
+                                FontSize="Micro"
+                                SemanticProperties.Description="Country Capital"/>
+                            <!-- sub-region, region -->
+                            <HorizontalStackLayout>
+                                <Label
+                                    Text="Region: "
+                                    FontSize="Micro"
+                                    SemanticProperties.Description="Country Region Label"/>
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label
+                                        IsVisible="{Binding Subregion, Converter={StaticResource IsNotNullOrEmptyConverter}}"
+                                        Text="{Binding Subregion, StringFormat='{0},'}"
+                                        FontSize="Micro"
+                                        SemanticProperties.Description="Country Subregion"/>
+                                    <Label
+                                        Text="{Binding Region}"
+                                        FontSize="Micro"
+                                        SemanticProperties.Description="Country Region"/>
+                                </HorizontalStackLayout>
+                            </HorizontalStackLayout>
+                            <!-- population -->
+                            <Label
+                                Text="{Binding Population, StringFormat='Population: {0:N0}'}"
+                                FontSize="Micro"
+                                SemanticProperties.Description="Country Population"/>
+                            <!-- languages -->
+                            <Label
+                                Text="{Binding Languages, StringFormat='Languages: {0}'}"
+                                FontSize="Micro"
+                                MaxLines="1"
+                                LineBreakMode="TailTruncation"
+                                SemanticProperties.Description="Country Languages"/>
+
+                        </VerticalStackLayout>
+
+
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>

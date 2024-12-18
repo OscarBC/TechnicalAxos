@@ -3,13 +3,13 @@
     x:Class="TechnicalAxos_OscarBarrera.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:TechnicalAxos_OscarBarrera"
+    xmlns:views="clr-namespace:TechnicalAxos_OscarBarrera.Views"
     Shell.FlyoutBehavior="Flyout"
     Title="TechnicalAxos_OscarBarrera">
 
     <ShellContent
         Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
+        ContentTemplate="{DataTemplate views:MainPage}"
         Route="MainPage" />
 
 </Shell>
