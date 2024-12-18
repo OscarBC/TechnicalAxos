@@ -4,7 +4,12 @@ using TechnicalAxos_OscarBarrera.Models;
 namespace TechnicalAxos_OscarBarrera.Services
 {
 
-    public class CountriesApiService
+    public interface ICountriesApiService
+    {
+        Task<List<CountryInfo>> GetAllCountriesAsync();
+    }
+
+    public class CountriesApiService : ICountriesApiService
     {
         private readonly HttpClient _httpClient;
 
@@ -16,24 +21,29 @@ namespace TechnicalAxos_OscarBarrera.Services
             };
         }
 
-        public async Task<List<CountryInfo>> GetAllCountriesAsync()
+        public virtual async Task<List<CountryInfo>> GetAllCountriesAsync()
         {
-            try{
+            try
+            {
                 var response = await _httpClient.GetAsync("all?fields=name,capital,region,subregion,population,languages,flags");
-                Console.WriteLine("response:"+response.StatusCode);
-                if(response.IsSuccessStatusCode)
+                Console.WriteLine("response:" + response.StatusCode);
+                if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadAsStringAsync();
                     var countries = JsonConvert.DeserializeObject<List<CountryInfo>>(result);
                     return countries ?? new List<CountryInfo>();
-                }else{
+                }
+                else
+                {
                     return new List<CountryInfo>();
                 }
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine(e.Message);
                 return new List<CountryInfo>();
             }
         }
     }
-    
+
 }

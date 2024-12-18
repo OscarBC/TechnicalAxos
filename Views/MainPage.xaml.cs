@@ -7,4 +7,12 @@ public partial class MainPage : ContentPage
 		InitializeComponent();
 	}
 
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+
+		_viewModel.LoadCountriesAsync();
+	}
+
+
 }

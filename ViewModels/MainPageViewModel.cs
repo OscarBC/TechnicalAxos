@@ -10,16 +10,29 @@ namespace TechnicalAxos_OscarBarrera.ViewModels
 {
     public class MainPageViewModel : INotifyPropertyChanged
     {
-        private readonly CountriesApiService _countriesApiService;
+        private readonly ICountriesApiService _countriesApiService;
+        private readonly IMediaPicker _mediaPickerService;
+        private readonly IFileService _fileService;
         private string _bundleID;
         private ImageSource _imageSource;
         private ObservableCollection<CountryInfo> _countries;
+        private bool _isLoading;
+
 
         public MainPageViewModel()
         {
             _countriesApiService = new CountriesApiService();
+            _mediaPickerService = MediaPicker.Default;
+            _fileService = new FileService();
             PickImageCommand = new Command(async () => await PickImageAsync());
-
+            InitializeViewModel();
+        }
+        public MainPageViewModel(ICountriesApiService api, IMediaPicker mediaPickerService, IFileService fileService)
+        {
+            _countriesApiService = api;
+            _mediaPickerService = mediaPickerService;
+            _fileService = fileService;
+            PickImageCommand = new Command(async () => await PickImageAsync());
             InitializeViewModel();
         }
 
@@ -45,6 +58,12 @@ namespace TechnicalAxos_OscarBarrera.ViewModels
 
         public ICommand PickImageCommand { get; }
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
         #endregion
 
         #region Initialization Methods
@@ -53,7 +72,6 @@ namespace TechnicalAxos_OscarBarrera.ViewModels
         {
             SetBundleID();
             SetDefaultImage();
-            LoadCountriesAsync();
         }
 
         private void SetBundleID()
@@ -67,12 +85,18 @@ namespace TechnicalAxos_OscarBarrera.ViewModels
             ImageSource = ImageSource.FromUri(new Uri(defaultImageUrl));
         }
 
-        private async void LoadCountriesAsync()
+        #endregion
+
+        #region Public Methods
+
+        public async void LoadCountriesAsync()
         {
             try
             {
+                IsLoading = true;
                 var countries = await _countriesApiService.GetAllCountriesAsync();
                 Countries = new ObservableCollection<CountryInfo>(countries);
+                IsLoading = false;
                 Console.WriteLine($"Loaded {countries.Count} countries.");
             }
             catch (Exception ex)
@@ -81,7 +105,7 @@ namespace TechnicalAxos_OscarBarrera.ViewModels
             }
         }
 
-        #endregion
+        #endregion 
 
         #region Command Handlers
 
@@ -89,9 +113,12 @@ namespace TechnicalAxos_OscarBarrera.ViewModels
         {
             try
             {
-                if (!await CheckAndRequestPhotoLibraryPermissionAsync()) return;
 
-                var result = await MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions
+#if __IOS__ || __ANDROID__
+                if (!await CheckAndRequestPhotoLibraryPermissionAsync()) return;
+#endif
+
+                var result = await _mediaPickerService.PickPhotoAsync(new MediaPickerOptions
                 {
                     Title = "Please pick an image"
                 });
@@ -124,7 +151,7 @@ namespace TechnicalAxos_OscarBarrera.ViewModels
 
         private async Task SetImageFromResultAsync(FileResult result)
         {
-            var stream = await result.OpenReadAsync();
+            var stream = await _fileService.OpenReadAsync(result);
             ImageSource = ImageSource.FromStream(() => stream);
 
             Console.WriteLine($"Image path: {result.FullPath}");

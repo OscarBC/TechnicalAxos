@@ -6,7 +6,7 @@
              xmlns:helpers="clr-namespace:TechnicalAxos_OscarBarrera.Helpers.Views">
 
     <ContentPage.BindingContext>
-        <viewModels:MainPageViewModel/>
+        <viewModels:MainPageViewModel x:Name="_viewModel" />
     </ContentPage.BindingContext>
 
     <ContentPage.Resources>
@@ -51,6 +51,16 @@
         </VerticalStackLayout>
 
         <!-- Countries Collection -->
+
+        <!-- loading -->
+        <ActivityIndicator
+            Grid.Row="1"
+            IsRunning="{Binding IsLoading}"
+            IsVisible="{Binding IsLoading}"
+            Scale="2"
+            SemanticProperties.Description="Loading Indicator"
+            Margin="0,40"/>
+
         <CollectionView
             Grid.Row="1"
             Margin="30,10"
