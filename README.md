@@ -1,0 +1,2 @@
+# TechnicalAxos
+.net maui app
