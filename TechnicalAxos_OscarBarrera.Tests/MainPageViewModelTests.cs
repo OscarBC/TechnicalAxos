@@ -55,7 +55,7 @@ public class MainPageViewModelTests
         Assert.Equal(mockCountries.Count, _viewModel.Countries.Count);
     }
 
-    // [Fact]
+    [Fact]
     public async Task LoadCountriesAsync_ShouldHandleExceptionGracefully()
     {
         // Arrange
